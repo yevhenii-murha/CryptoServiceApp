@@ -5,17 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CryptoService"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="1000">
     <Grid>
         <ListView ItemsSource="{Binding Cryptos}" Margin="10,10,10,10">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" />
+                    <GridViewColumn Header="Rank" DisplayMemberBinding="{Binding Rank}" />
                     <GridViewColumn Header="Symbol" DisplayMemberBinding="{Binding Symbol}" />
-                    <GridViewColumn Header="Price (USD)" DisplayMemberBinding="{Binding PriceUsd}" />
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Supply" DisplayMemberBinding="{Binding Supply}" />
+                    <GridViewColumn Header="Max Supply" DisplayMemberBinding="{Binding DisplayMaxSupply}" />
                     <GridViewColumn Header="Market Cap (USD)" DisplayMemberBinding="{Binding MarketCapUsd}" />
                     <GridViewColumn Header="Volume (24h)" DisplayMemberBinding="{Binding VolumeUsd24Hr}" />
+                    <GridViewColumn Header="Price (USD)" DisplayMemberBinding="{Binding PriceUsd}" />
                     <GridViewColumn Header="Change (24h)" DisplayMemberBinding="{Binding ChangePercent24Hr}" />
+                    <GridViewColumn Header="VWAP (24h)" DisplayMemberBinding="{Binding Vwap24Hr}" />
                 </GridView>
             </ListView.View>
         </ListView>
