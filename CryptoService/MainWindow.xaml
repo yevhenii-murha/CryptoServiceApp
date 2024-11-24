@@ -4,9 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CryptoService"
+        xmlns:converters="clr-namespace:CryptoService.Converters"
         mc:Ignorable="d"
-        Title="Crypto Prices" Height="600" Width="1000"
+        Title="Ціни на криптовалюту" Height="600" Width="1000"
         Background="#0D1B2A">
+    <Window.Resources>
+        <!-- Конвертери для стрілок -->
+        <converters:PositiveChangeVisibilityConverter x:Key="PositiveChangeVisibility" />
+        <converters:NegativeChangeVisibilityConverter x:Key="NegativeChangeVisibility" />
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <!-- Рядок для заголовка -->
@@ -17,7 +24,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок у рамці -->
+        <!-- Заголовок -->
         <Border BorderBrush="#5BC0BE" BorderThickness="2" CornerRadius="10" Margin="20">
             <TextBlock HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -50,7 +57,7 @@
                        Padding="10" />
         </Border>
 
-        <!-- Список криптовалют у рамці -->
+        <!-- Список криптовалют -->
         <Border BorderBrush="#5BC0BE" BorderThickness="2" CornerRadius="10" Margin="20" Grid.Row="2"
                 Background="#1B263B">
             <ListView ItemsSource="{Binding Cryptos}" Margin="10">
@@ -65,7 +72,24 @@
                         <GridViewColumn Header="Ринкова капіталізація (USD)" DisplayMemberBinding="{Binding MarketCapUsd}" Width="150"/>
                         <GridViewColumn Header="Обсяг торгів (24 год)" DisplayMemberBinding="{Binding VolumeUsd24Hr}" Width="150"/>
                         <GridViewColumn Header="Ціна (USD)" DisplayMemberBinding="{Binding PriceUsd}" Width="100"/>
-                        <GridViewColumn Header="Зміна ціни (24 год, %)" DisplayMemberBinding="{Binding ChangePercent24Hr}" Width="150"/>
+                        <GridViewColumn Header="Зміна ціни (24 год, %)" Width="150">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <!-- Стрілочка вгору -->
+                                        <TextBlock Text="▲" 
+                                                   Foreground="Green" 
+                                                   Visibility="{Binding ChangePercent24Hr, Converter={StaticResource PositiveChangeVisibility}}" />
+                                        <!-- Стрілочка вниз -->
+                                        <TextBlock Text="▼" 
+                                                   Foreground="Red" 
+                                                   Visibility="{Binding ChangePercent24Hr, Converter={StaticResource NegativeChangeVisibility}}" />
+                                        <!-- Значення зміни -->
+                                        <TextBlock Text="{Binding ChangePercent24Hr}" Margin="5,0,0,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Header="Середня ціна (VWAP, 24 год)" DisplayMemberBinding="{Binding Vwap24Hr}" Width="150"/>
                     </GridView>
                 </ListView.View>
