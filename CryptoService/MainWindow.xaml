@@ -5,39 +5,71 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CryptoService"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="1000">
+        Title="Crypto Prices" Height="600" Width="1000"
+        Background="#0D1B2A">
     <Grid>
         <Grid.RowDefinitions>
-            <!-- Рядок для виведення повідомлень про помилки -->
+            <!-- Рядок для заголовка -->
+            <RowDefinition Height="Auto"/>
+            <!-- Рядок для повідомлень про помилки -->
             <RowDefinition Height="Auto"/>
             <!-- Рядок для списку криптовалют -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Відображення помилок -->
-        <TextBlock Text="{Binding ErrorMessage}" 
-                   Foreground="Red" 
-                   FontWeight="Bold" 
-                   Margin="10,0,10,5"
-                   Grid.Row="0" />
+        <!-- Заголовок у рамці -->
+        <Border BorderBrush="#5BC0BE" BorderThickness="2" CornerRadius="10" Margin="20">
+            <TextBlock HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       Foreground="#FFFFFF"
+                       Text="Актуальні ціни на криптовалюту за ринковою капіталізацією"
+                       Margin="10" />
+        </Border>
 
-        <!-- Список криптовалют -->
-        <ListView ItemsSource="{Binding Cryptos}" Margin="10,10,10,10" Grid.Row="1">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" />
-                    <GridViewColumn Header="Rank" DisplayMemberBinding="{Binding Rank}" />
-                    <GridViewColumn Header="Symbol" DisplayMemberBinding="{Binding Symbol}" />
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Supply" DisplayMemberBinding="{Binding Supply}" />
-                    <GridViewColumn Header="Max Supply" DisplayMemberBinding="{Binding DisplayMaxSupply}" />
-                    <GridViewColumn Header="Market Cap (USD)" DisplayMemberBinding="{Binding MarketCapUsd}" />
-                    <GridViewColumn Header="Volume (24h)" DisplayMemberBinding="{Binding VolumeUsd24Hr}" />
-                    <GridViewColumn Header="Price (USD)" DisplayMemberBinding="{Binding PriceUsd}" />
-                    <GridViewColumn Header="Change (24h)" DisplayMemberBinding="{Binding ChangePercent24Hr}" />
-                    <GridViewColumn Header="VWAP (24h)" DisplayMemberBinding="{Binding Vwap24Hr}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <!-- Відображення помилок -->
+        <Border BorderBrush="#FF4C4C" BorderThickness="2" CornerRadius="5" Margin="20,0,20,10" Grid.Row="1"
+                Background="#FFEBEB">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ErrorMessage}" Value="">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBlock Text="{Binding ErrorMessage}" 
+                       Foreground="#FF4C4C"
+                       FontWeight="Bold" 
+                       FontSize="14"
+                       Padding="10" />
+        </Border>
+
+        <!-- Список криптовалют у рамці -->
+        <Border BorderBrush="#5BC0BE" BorderThickness="2" CornerRadius="10" Margin="20" Grid.Row="2"
+                Background="#1B263B">
+            <ListView ItemsSource="{Binding Cryptos}" Margin="10">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="80"/>
+                        <GridViewColumn Header="Рейтинг" DisplayMemberBinding="{Binding Rank}" Width="80"/>
+                        <GridViewColumn Header="Символ" DisplayMemberBinding="{Binding Symbol}" Width="80"/>
+                        <GridViewColumn Header="Назва" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                        <GridViewColumn Header="Пропозиція (Supply)" DisplayMemberBinding="{Binding Supply}" Width="150"/>
+                        <GridViewColumn Header="Макс. пропозиція (Max Supply)" DisplayMemberBinding="{Binding DisplayMaxSupply}" Width="150"/>
+                        <GridViewColumn Header="Ринкова капіталізація (USD)" DisplayMemberBinding="{Binding MarketCapUsd}" Width="150"/>
+                        <GridViewColumn Header="Обсяг торгів (24 год)" DisplayMemberBinding="{Binding VolumeUsd24Hr}" Width="150"/>
+                        <GridViewColumn Header="Ціна (USD)" DisplayMemberBinding="{Binding PriceUsd}" Width="100"/>
+                        <GridViewColumn Header="Зміна ціни (24 год, %)" DisplayMemberBinding="{Binding ChangePercent24Hr}" Width="150"/>
+                        <GridViewColumn Header="Середня ціна (VWAP, 24 год)" DisplayMemberBinding="{Binding Vwap24Hr}" Width="150"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Border>
     </Grid>
 </Window>
