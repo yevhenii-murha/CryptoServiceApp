@@ -1,78 +1,83 @@
-﻿using System.Collections.Generic;
+﻿using CryptoService.Model;
+using CryptoService.DTOs;
+using CryptoService.Services;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
-using System;
-using CryptoService.Model;
-using CryptoService.DTOs;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
-public class CryptoViewModel : INotifyPropertyChanged
+namespace CryptoService
 {
-    private ObservableCollection<Cryptocurrency> _cryptos;
-
-    public ObservableCollection<Cryptocurrency> Cryptos
+    public class CryptoViewModel : INotifyPropertyChanged
     {
-        get { return _cryptos; }
-        set
+        private readonly ICryptoApiService _cryptoApiService;
+        private ObservableCollection<Cryptocurrency> _cryptos;
+
+        public ObservableCollection<Cryptocurrency> Cryptos
         {
-            _cryptos = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public CryptoViewModel()
-    {
-        Cryptos = new ObservableCollection<Cryptocurrency>();
-        LoadTopCryptos();
-    }
-
-    public async void LoadTopCryptos()
-    {
-        try
-        {
-            var client = new HttpClient();
-            var response = await client.GetStringAsync("https://api.coincap.io/v2/assets");
-
-            if (string.IsNullOrEmpty(response))
+            get { return _cryptos; }
+            set
             {
-                Console.WriteLine("API response is empty.");
-                return;
-            }
-
-            var root = JsonSerializer.Deserialize<Root>(response);
-
-            var cryptos = ToCryptos(root);
-
-            Cryptos.Clear();
-            foreach (var crypto in cryptos)
-            {
-                Cryptos.Add(crypto);
+                _cryptos = value;
+                OnPropertyChanged();
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error occurred: {ex.Message}");
-        }
-    }
 
-    private IEnumerable<Cryptocurrency> ToCryptos(Root? root)
-    {
-        if (root == null || root.data == null)
+        private string _errorMessage;
+        public string ErrorMessage
         {
-            Console.WriteLine("Invalid root data.");
-            return Enumerable.Empty<Cryptocurrency>();
+            get => _errorMessage;
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+            }
         }
 
-        return root.data.Select(cryptoDto => (Cryptocurrency)cryptoDto);
-    }
+        public CryptoViewModel(ICryptoApiService cryptoApiService)
+        {
+            _cryptoApiService = cryptoApiService;
+            Cryptos = new ObservableCollection<Cryptocurrency>();
+        }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+        public async Task InitializeAsync(string baseAddress, string requestUri)
+        {
+            await LoadTopCryptos(baseAddress, requestUri);
+        }
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public async Task LoadTopCryptos(string baseAddress, string requestUri)
+        {
+            try
+            {
+                var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
+                var cryptos = ToCryptos(root);
+                Cryptos.Clear();
+                var topRankedCryptos = cryptos.OrderBy(crypto => crypto.Rank).Take(10);
+                foreach (var crypto in topRankedCryptos)
+                {
+                    Cryptos.Add(crypto);
+                }
+                ErrorMessage = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error: {ex.Message}";
+            }
+        }
+
+        private IEnumerable<Cryptocurrency> ToCryptos(Root root)
+        {
+            return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto) ?? Enumerable.Empty<Cryptocurrency>();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

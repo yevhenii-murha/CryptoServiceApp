@@ -7,7 +7,22 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="1000">
     <Grid>
-        <ListView ItemsSource="{Binding Cryptos}" Margin="10,10,10,10">
+        <Grid.RowDefinitions>
+            <!-- Рядок для виведення повідомлень про помилки -->
+            <RowDefinition Height="Auto"/>
+            <!-- Рядок для списку криптовалют -->
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Відображення помилок -->
+        <TextBlock Text="{Binding ErrorMessage}" 
+                   Foreground="Red" 
+                   FontWeight="Bold" 
+                   Margin="10,0,10,5"
+                   Grid.Row="0" />
+
+        <!-- Список криптовалют -->
+        <ListView ItemsSource="{Binding Cryptos}" Margin="10,10,10,10" Grid.Row="1">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" />

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CryptoService.Services;
+using System;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,7 +24,18 @@ namespace CryptoService
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new CryptoViewModel();
+            Loaded += async (s, e) => await InitializeViewModelAsync();
+        }
+
+        private async Task InitializeViewModelAsync()
+        {
+            var cryptoService = new CoinCapApiService(new HttpClient());
+            string baseAddress = "https://api.coincap.io";
+            string requestUri = "/v2/assets";
+
+            var viewModel = new CryptoViewModel(cryptoService);
+            await viewModel.InitializeAsync(baseAddress, requestUri);
+            DataContext = viewModel;
         }
     }
 }
