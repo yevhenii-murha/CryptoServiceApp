@@ -17,72 +17,71 @@
                 Margin="20"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
-            <StackPanel>
-                <!-- Список криптовалют -->
-                <ItemsControl ItemsSource="{Binding Cryptos}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="50"/>
-                                    <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="120"/>
-                                    <ColumnDefinition Width="100"/>
-                                </Grid.ColumnDefinitions>
+            <Grid>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Cryptos}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5" Width="470">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <!-- Символ криптовалюти -->
-                                <TextBlock Grid.Column="0"
-                                           Text="{Binding Symbol}"
-                                           FontSize="14"
-                                           FontWeight="Bold"
-                                           Foreground="White"
-                                           VerticalAlignment="Center" />
+                                    <!-- Символ криптовалюти -->
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding Symbol}"
+                                               FontSize="14"
+                                               FontWeight="Bold"
+                                               Foreground="White"
+                                               VerticalAlignment="Center" />
 
-                                <!-- Назва криптовалюти -->
-                                <TextBlock Grid.Column="1"
-                                           Text="{Binding Name}"
-                                           FontSize="12"
-                                           Foreground="#A0A0A0"
-                                           VerticalAlignment="Center" />
+                                    <!-- Назва криптовалюти -->
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               FontSize="12"
+                                               Foreground="#A0A0A0"
+                                               VerticalAlignment="Center" />
 
-                                <!-- Ціна -->
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding PriceUsd, StringFormat={}{0:C2}}"
-                                           FontSize="14"
-                                           FontWeight="Bold"
-                                           Foreground="White"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Right"/>
+                                    <!-- Ціна -->
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding PriceUsd, StringFormat={}{0:C2}}"
+                                               FontSize="14"
+                                               FontWeight="Bold"
+                                               Foreground="White"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right"/>
 
-                                <!-- Зміна ціни -->
-                                <TextBlock Grid.Column="3"
-                                           Text="{Binding ChangePercent24Hr, StringFormat={}{0:0.00}%}"
-                                           FontSize="14"
-                                           FontWeight="Bold"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Right">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Foreground" Value="White" />
-                                            <Style.Triggers>
-                                                <!-- Використовуємо конвертер для позитивних змін -->
-                                                <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource PositiveChangeVisibilityConverter}}" Value="Visible">
-                                                    <Setter Property="Foreground" Value="#2ECC71" />
-                                                </DataTrigger>
+                                    <!-- Зміна ціни -->
+                                    <TextBlock Grid.Column="3"
+                                               Text="{Binding ChangePercent24Hr, StringFormat={}{0:0.00}%}"
+                                               FontSize="14"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Right">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="White" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource PositiveChangeVisibilityConverter}}" Value="Visible">
+                                                        <Setter Property="Foreground" Value="#2ECC71" />
+                                                    </DataTrigger>
 
-                                                <!-- Використовуємо конвертер для негативних змін -->
-                                                <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource NegativeChangeVisibilityConverter}}" Value="Visible">
-                                                    <Setter Property="Foreground" Value="#E74C3C" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
+                                                    <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource NegativeChangeVisibilityConverter}}" Value="Visible">
+                                                        <Setter Property="Foreground" Value="#E74C3C" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
         </Border>
     </Grid>
 </Page>
