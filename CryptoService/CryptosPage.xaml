@@ -1,96 +1,88 @@
 ﻿<Page x:Class="CryptoService.CryptosPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="clr-namespace:CryptoService"
-      xmlns:converters="clr-namespace:CryptoService.Converters"
-      Title="CryptosPage"
-      Background="#0D1B2A">
+      xmlns:local="clr-namespace:CryptoService.Converters" Title="Crypto App" Background="#0D1B2A">
+
     <Page.Resources>
-        <!-- Конвертери для стрілок -->
-        <converters:PositiveChangeVisibilityConverter x:Key="PositiveChangeVisibility" />
-        <converters:NegativeChangeVisibilityConverter x:Key="NegativeChangeVisibility" />
+        <!-- Ресурси для конвертерів -->
+        <local:PositiveChangeVisibilityConverter x:Key="PositiveChangeVisibilityConverter"/>
+        <local:NegativeChangeVisibilityConverter x:Key="NegativeChangeVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <!-- Рядок для заголовка -->
-            <RowDefinition Height="Auto"/>
-            <!-- Рядок для повідомлень про помилки -->
-            <RowDefinition Height="Auto"/>
-            <!-- Рядок для списку криптовалют -->
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <!-- Основний контейнер для таблиці -->
+        <Border Background="#1B263B"
+                CornerRadius="15"
+                Padding="20"
+                Margin="20"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+            <StackPanel>
+                <!-- Список криптовалют -->
+                <ItemsControl ItemsSource="{Binding Cryptos}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
 
-        <!-- Заголовок -->
-        <Border BorderBrush="#5BC0BE" BorderThickness="2" CornerRadius="10" Margin="20">
-            <TextBlock HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Foreground="#FFFFFF"
-                       Text="Актуальні ціни на криптовалюту за ринковою капіталізацією"
-                       Margin="10" />
-        </Border>
+                                <!-- Символ криптовалюти -->
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Symbol}"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           VerticalAlignment="Center" />
 
-        <!-- Відображення помилок -->
-        <Border BorderBrush="#FF4C4C" BorderThickness="2" CornerRadius="5" Margin="20,0,20,10" Grid.Row="1"
-                Background="#FFEBEB">
-            <Border.Style>
-                <Style TargetType="Border">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding ErrorMessage}" Value="">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding ErrorMessage}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Border.Style>
-            <TextBlock Text="{Binding ErrorMessage}" 
-                       Foreground="#FF4C4C"
-                       FontWeight="Bold" 
-                       FontSize="14"
-                       Padding="10" />
-        </Border>
+                                <!-- Назва криптовалюти -->
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding Name}"
+                                           FontSize="12"
+                                           Foreground="#A0A0A0"
+                                           VerticalAlignment="Center" />
 
-        <!-- Список криптовалют -->
-        <Border BorderBrush="#5BC0BE" BorderThickness="2" CornerRadius="10" Margin="20" Grid.Row="2"
-                Background="#1B263B">
-            <ListView ItemsSource="{Binding Cryptos}" Margin="10">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" Width="80"/>
-                        <GridViewColumn Header="Рейтинг" DisplayMemberBinding="{Binding Rank}" Width="80"/>
-                        <GridViewColumn Header="Символ" DisplayMemberBinding="{Binding Symbol}" Width="80"/>
-                        <GridViewColumn Header="Назва" DisplayMemberBinding="{Binding Name}" Width="150"/>
-                        <GridViewColumn Header="Пропозиція (Supply)" DisplayMemberBinding="{Binding Supply}" Width="150"/>
-                        <GridViewColumn Header="Макс. пропозиція (Max Supply)" DisplayMemberBinding="{Binding DisplayMaxSupply}" Width="150"/>
-                        <GridViewColumn Header="Ринкова капіталізація (USD)" DisplayMemberBinding="{Binding MarketCapUsd}" Width="150"/>
-                        <GridViewColumn Header="Обсяг торгів (24 год)" DisplayMemberBinding="{Binding VolumeUsd24Hr}" Width="150"/>
-                        <GridViewColumn Header="Ціна (USD)" DisplayMemberBinding="{Binding PriceUsd}" Width="100"/>
-                        <GridViewColumn Header="Зміна ціни (24 год, %)" Width="150">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <!-- Стрілочка вгору -->
-                                        <TextBlock Text="▲" 
-                                                   Foreground="Green" 
-                                                   Visibility="{Binding ChangePercent24Hr, Converter={StaticResource PositiveChangeVisibility}}" />
-                                        <!-- Стрілочка вниз -->
-                                        <TextBlock Text="▼" 
-                                                   Foreground="Red" 
-                                                   Visibility="{Binding ChangePercent24Hr, Converter={StaticResource NegativeChangeVisibility}}" />
-                                        <!-- Значення зміни -->
-                                        <TextBlock Text="{Binding ChangePercent24Hr}" Margin="5,0,0,0" />
-                                    </StackPanel>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Середня ціна (VWAP, 24 год)" DisplayMemberBinding="{Binding Vwap24Hr}" Width="150"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+                                <!-- Ціна -->
+                                <TextBlock Grid.Column="2"
+                                           Text="{Binding PriceUsd, StringFormat={}{0:C2}}"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="White"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right"/>
+
+                                <!-- Зміна ціни -->
+                                <TextBlock Grid.Column="3"
+                                           Text="{Binding ChangePercent24Hr, StringFormat={}{0:0.00}%}"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Right">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="White" />
+                                            <Style.Triggers>
+                                                <!-- Використовуємо конвертер для позитивних змін -->
+                                                <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource PositiveChangeVisibilityConverter}}" Value="Visible">
+                                                    <Setter Property="Foreground" Value="#2ECC71" />
+                                                </DataTrigger>
+
+                                                <!-- Використовуємо конвертер для негативних змін -->
+                                                <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource NegativeChangeVisibilityConverter}}" Value="Visible">
+                                                    <Setter Property="Foreground" Value="#E74C3C" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
         </Border>
     </Grid>
 </Page>
