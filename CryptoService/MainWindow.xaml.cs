@@ -24,18 +24,19 @@ namespace CryptoService
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += async (s, e) => await InitializeViewModelAsync();
+            Loaded += async (s, e) => await InitializeViewAsync();
         }
 
-        private async Task InitializeViewModelAsync()
+        private async Task InitializeViewAsync()
         {
             var cryptoService = new CoinCapApiService(new HttpClient());
+            var viewModel = new CryptoViewModel(cryptoService);
+
             string baseAddress = "https://api.coincap.io";
             string requestUri = "/v2/assets";
-
-            var viewModel = new CryptoViewModel(cryptoService);
             await viewModel.InitializeAsync(baseAddress, requestUri);
-            DataContext = viewModel;
+
+            MainFrame.Content = new CryptosPage(viewModel);
         }
     }
 }
