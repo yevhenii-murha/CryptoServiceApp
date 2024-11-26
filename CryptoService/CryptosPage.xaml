@@ -11,9 +11,9 @@
 
     <Grid>
         <Button x:Name="ShowAllButton" Content="Show All"
-        Background="Yellow" Foreground="#1B263B"
+        Background="#F3BA2F" Foreground="#1B263B"
         FontSize="12" FontWeight="Bold"
-        Width="Auto" Height="Auto"
+        Width="100" Height="25"
         HorizontalAlignment="Right"
         VerticalAlignment="Top"
         Margin="10"

@@ -42,5 +42,12 @@ namespace CryptoService
             string requestUri = "/v2/assets";
             await _viewModel.LoadAllCryptos(baseAddress, requestUri);
         }
+
+        private void InfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            Button clickedButton = (Button)sender;
+            //var crypto = clickedButton.DataContext as Crypto;
+        }
+
     }
 }

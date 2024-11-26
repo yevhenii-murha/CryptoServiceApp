@@ -21,9 +21,9 @@
 
         <!-- Кнопка "Назад" -->
         <Button x:Name="BackButton" Content="Back"
-                Background="Yellow" Foreground="#1B263B"
+                Background="#F3BA2F" Foreground="#1B263B"
                 FontSize="12" FontWeight="Bold"
-                Width="Auto" Height="Auto"
+                Width="100" Height="25"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Margin="10"
@@ -41,12 +41,13 @@
                     <ItemsControl ItemsSource="{Binding AllCryptos}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Margin="0,5" Width="470">
+                                <Grid Margin="0" Width="500">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50"/>
-                                        <ColumnDefinition Width="200"/>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition Width="150"/>
                                         <ColumnDefinition Width="120"/>
-                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="90"/>
+                                        <ColumnDefinition Width="70"/>
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Символ криптовалюти -->
@@ -95,6 +96,36 @@
                                             </Style>
                                         </TextBlock.Style>
                                     </TextBlock>
+
+                                    <!-- Кнопка Info (Кругла з буквою "i") -->
+                                    <Button Grid.Column="4"
+                                            Content="i"
+                                            Background="#F3BA2F"
+                                            Foreground="#1B263B"
+                                            FontSize="12"
+                                            FontWeight="Bold"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Margin="5"
+                                            Width="20"
+                                            Height="20"
+                                            BorderBrush="#F3BA2F"
+                                            BorderThickness="1"
+                                            Click="InfoButton_Click">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="20">
+                                                    <ContentPresenter HorizontalAlignment="Center"
+                                                                     VerticalAlignment="Center"
+                                                                     Content="{TemplateBinding Content}" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
