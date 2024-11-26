@@ -105,6 +105,27 @@ namespace CryptoService
             return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto) ?? Enumerable.Empty<Cryptocurrency>();
         }
 
+        public ObservableCollection<Market> Markets { get; private set; } = new ObservableCollection<Market>();
+
+        public async Task LoadCryptoMarketsAsync(string baseAddress, string cryptoId)
+        {
+            try
+            {
+                var marketRoot = await _cryptoApiService.GetCryptoMarketsAsync(baseAddress, cryptoId);
+                var markets = marketRoot.data.Select(marketDto => (Market)marketDto);
+
+                Markets.Clear();
+                foreach (var market in markets)
+                {
+                    Markets.Add(market);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error loading market data: {ex.Message}";
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

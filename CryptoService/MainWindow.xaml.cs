@@ -28,14 +28,12 @@ namespace CryptoService
             InitializeComponent();
             _viewModel = new CryptoViewModel(new CoinCapApiService(new HttpClient()));
 
-            // Завантажуємо дані
             Loaded += async (s, e) =>
             {
                 string baseAddress = "https://api.coincap.io";
                 string requestUri = "/v2/assets";
                 await _viewModel.InitializeAsync(baseAddress, requestUri);
 
-                // Передаємо ViewModel в першу сторінку
                 MainFrame.Navigate(new CryptosPage(_viewModel));
             };
         }

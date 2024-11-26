@@ -1,4 +1,5 @@
-﻿using CryptoService.Services;
+﻿using CryptoService.Model;
+using CryptoService.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,9 +46,14 @@ namespace CryptoService
 
         private void InfoButton_Click(object sender, RoutedEventArgs e)
         {
-            Button clickedButton = (Button)sender;
-            //var crypto = clickedButton.DataContext as Crypto;
-        }
+            var button = sender as Button;
+            var selectedCrypto = (Cryptocurrency)button.DataContext;
 
+            if (selectedCrypto != null)
+            {
+                var detailsPage = new CryptoDetailsPage(_viewModel, selectedCrypto.Id);
+                NavigationService.Navigate(detailsPage);
+            }
+        }
     }
 }

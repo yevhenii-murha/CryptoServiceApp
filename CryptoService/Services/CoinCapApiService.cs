@@ -41,5 +41,34 @@ namespace CryptoService.Services
                 throw new Exception("An unexpected error occurred while fetching data from the API.", ex);
             }
         }
+
+        public async Task<MarketRoot> GetCryptoMarketsAsync(string baseAddress, string cryptoId)
+        {
+            try
+            {
+                string requestUri = $"/v2/assets/{cryptoId}/markets";
+                var fullUrl = new Uri(new Uri(baseAddress), requestUri);
+                var response = await _httpClient.GetStringAsync(fullUrl);
+
+                if (string.IsNullOrEmpty(response))
+                {
+                    throw new Exception("Empty response from API.");
+                }
+
+                return JsonSerializer.Deserialize<MarketRoot>(response);
+            }
+            catch (HttpRequestException httpEx)
+            {
+                throw new Exception($"HTTP request error: {httpEx.Message}", httpEx);
+            }
+            catch (JsonException jsonEx)
+            {
+                throw new Exception($"JSON deserialization error: {jsonEx.Message}", jsonEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unexpected error: {ex.Message}", ex);
+            }
+        }
     }
 }
