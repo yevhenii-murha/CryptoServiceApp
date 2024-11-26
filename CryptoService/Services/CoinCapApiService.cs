@@ -19,8 +19,8 @@ namespace CryptoService.Services
         {
             try
             {
-                _httpClient.BaseAddress = new Uri(baseAddress);
-                var response = await _httpClient.GetStringAsync(requestUri);
+                var fullUrl = new Uri(new Uri(baseAddress), requestUri);
+                var response = await _httpClient.GetStringAsync(fullUrl);
                 if (string.IsNullOrEmpty(response))
                 {
                     throw new Exception("API response is empty.");

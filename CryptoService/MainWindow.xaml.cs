@@ -21,22 +21,23 @@ namespace CryptoService
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly CryptoViewModel _viewModel;
+
         public MainWindow()
         {
             InitializeComponent();
-            Loaded += async (s, e) => await InitializeViewAsync();
-        }
+            _viewModel = new CryptoViewModel(new CoinCapApiService(new HttpClient()));
 
-        private async Task InitializeViewAsync()
-        {
-            var cryptoService = new CoinCapApiService(new HttpClient());
-            var viewModel = new CryptoViewModel(cryptoService);
+            // Завантажуємо дані
+            Loaded += async (s, e) =>
+            {
+                string baseAddress = "https://api.coincap.io";
+                string requestUri = "/v2/assets";
+                await _viewModel.InitializeAsync(baseAddress, requestUri);
 
-            string baseAddress = "https://api.coincap.io";
-            string requestUri = "/v2/assets";
-            await viewModel.InitializeAsync(baseAddress, requestUri);
-
-            MainFrame.Content = new CryptosPage(viewModel);
+                // Передаємо ViewModel в першу сторінку
+                MainFrame.Navigate(new CryptosPage(_viewModel));
+            };
         }
     }
 }

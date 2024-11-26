@@ -61,7 +61,6 @@ namespace CryptoService.Model
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                Console.WriteLine($"Warning: {fieldName} is null or empty. Defaulting to 0.");
                 return 0m;
             }
 

@@ -14,7 +14,9 @@ namespace CryptoService
     public class CryptoViewModel : INotifyPropertyChanged
     {
         private readonly ICryptoApiService _cryptoApiService;
+
         private ObservableCollection<Cryptocurrency> _cryptos;
+        private ObservableCollection<Cryptocurrency> _allCryptos;
 
         public ObservableCollection<Cryptocurrency> Cryptos
         {
@@ -22,6 +24,16 @@ namespace CryptoService
             set
             {
                 _cryptos = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Cryptocurrency> AllCryptos
+        {
+            get { return _allCryptos; }
+            set
+            {
+                _allCryptos = value;
                 OnPropertyChanged();
             }
         }
@@ -41,6 +53,7 @@ namespace CryptoService
         {
             _cryptoApiService = cryptoApiService;
             Cryptos = new ObservableCollection<Cryptocurrency>();
+            AllCryptos = new ObservableCollection<Cryptocurrency>();
         }
 
         public async Task InitializeAsync(string baseAddress, string requestUri)
@@ -59,6 +72,25 @@ namespace CryptoService
                 foreach (var crypto in topRankedCryptos)
                 {
                     Cryptos.Add(crypto);
+                }
+                ErrorMessage = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error: {ex.Message}";
+            }
+        }
+
+        public async Task LoadAllCryptos(string baseAddress, string requestUri)
+        {
+            try
+            {
+                var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
+                var cryptos = ToCryptos(root);
+                AllCryptos.Clear();
+                foreach (var crypto in cryptos)
+                {
+                    AllCryptos.Add(crypto);
                 }
                 ErrorMessage = string.Empty;
             }
