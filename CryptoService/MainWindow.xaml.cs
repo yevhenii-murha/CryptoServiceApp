@@ -1,4 +1,5 @@
 ﻿using CryptoService.Services;
+using CryptoService.ViewModels;
 using System;
 using System.Linq;
 using System.Net.Http;

@@ -2,7 +2,7 @@
 using System;
 using System.Globalization;
 
-namespace CryptoService.Model
+namespace CryptoService.Models
 {
     public readonly record struct Cryptocurrency
     {

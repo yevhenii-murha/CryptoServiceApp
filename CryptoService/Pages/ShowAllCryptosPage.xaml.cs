@@ -1,5 +1,6 @@
-﻿using CryptoService.Model;
+﻿using CryptoService.Models;
 using CryptoService.Services;
+using CryptoService.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

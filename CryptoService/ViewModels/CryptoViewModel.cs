@@ -1,5 +1,4 @@
-﻿using CryptoService.Model;
-using CryptoService.DTOs;
+﻿using CryptoService.DTOs;
 using CryptoService.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -8,8 +7,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using CryptoService.Models;
 
-namespace CryptoService
+namespace CryptoService.ViewModels
 {
     public class CryptoViewModel : INotifyPropertyChanged
     {

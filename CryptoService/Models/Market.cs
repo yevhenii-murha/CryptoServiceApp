@@ -1,7 +1,7 @@
 ﻿using CryptoService.DTOs;
 using System;
 
-namespace CryptoService.Model
+namespace CryptoService.Models
 {
     public readonly record struct Market
     {
