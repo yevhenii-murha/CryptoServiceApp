@@ -17,9 +17,6 @@ using System.Windows.Shapes;
 
 namespace CryptoService
 {
-    /// <summary>
-    /// Логика взаимодействия для ShowAllCryptosPage.xaml
-    /// </summary>
     public partial class ShowAllCryptosPage : Page
     {
         private readonly CryptoViewModel _viewModel;
@@ -34,7 +31,7 @@ namespace CryptoService
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             var cryptosPage = new CryptosPage(_viewModel);
-            NavigationService.Navigate(cryptosPage);
+            NavigationService.GoBack();
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -54,6 +51,12 @@ namespace CryptoService
                 var detailsPage = new CryptoDetailsPage(_viewModel, selectedCrypto.Id);
                 NavigationService.Navigate(detailsPage);
             }
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            var searchQuery = SearchTextBox.Text;
+            _viewModel.SearchQuery = searchQuery;
         }
     }
 }

@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace CryptoService
 {
-    /// <summary>
-    /// Логика взаимодействия для CryptoDetailsPage.xaml
-    /// </summary>
     public partial class CryptoDetailsPage : Page
     {
         private readonly CryptoViewModel _viewModel;

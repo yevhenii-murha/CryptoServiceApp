@@ -9,6 +9,7 @@
         <!-- Ресурси для конвертерів -->
         <local:PositiveChangeVisibilityConverter x:Key="PositiveChangeVisibilityConverter"/>
         <local:NegativeChangeVisibilityConverter x:Key="NegativeChangeVisibilityConverter"/>
+        <local:EmptyTextToVisibilityConverter x:Key="EmptyTextToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
@@ -29,6 +30,18 @@
                 Margin="10"
                 Click="BackButton_Click" />
 
+        <!-- Текстове поле для пошуку -->
+        <Grid Grid.Row="0" Margin="10">
+            <TextBox x:Name="SearchTextBox" Width="200" VerticalAlignment="Center"
+                     Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                     Background="#1B263B" Foreground="White" FontSize="14" Margin="0,0,10,0"/>
+            
+            <TextBlock Text="Search by Name or Symbol" Foreground="Gray" 
+                       VerticalAlignment="Center" HorizontalAlignment="Left" 
+                       Margin="10,0,0,0" IsHitTestVisible="False"
+                       Visibility="{Binding Text, ElementName=SearchTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}"/>
+        </Grid>
+
         <!-- Основний контейнер для таблиці -->
         <Border Grid.Row="1" Background="#1B263B"
                 CornerRadius="15"
@@ -38,7 +51,7 @@
                 VerticalAlignment="Center">
             <Grid>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding AllCryptos}">
+                    <ItemsControl ItemsSource="{Binding FilteredCryptos}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0" Width="500">
@@ -125,7 +138,6 @@
                                             </ControlTemplate>
                                         </Button.Template>
                                     </Button>
-
                                 </Grid>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>

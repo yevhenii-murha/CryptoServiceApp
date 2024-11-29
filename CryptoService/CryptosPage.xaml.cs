@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace CryptoService
 {
-    /// <summary>
-    /// Логика взаимодействия для CryptosPage.xaml
-    /// </summary>
     public partial class CryptosPage : Page
     {
         private readonly CryptoViewModel _viewModel;
@@ -33,6 +30,13 @@ namespace CryptoService
         {
             var showAllPage = new ShowAllCryptosPage(_viewModel);
             NavigationService.Navigate(showAllPage);
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            string baseAddress = "https://api.coincap.io";
+            string requestUri = "/v2/assets";
+            await _viewModel.LoadTopCryptos(baseAddress, requestUri);
         }
     }
 }

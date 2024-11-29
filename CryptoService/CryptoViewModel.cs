@@ -16,7 +16,8 @@ namespace CryptoService
         private readonly ICryptoApiService _cryptoApiService;
 
         private ObservableCollection<Cryptocurrency> _cryptos;
-        private ObservableCollection<Cryptocurrency> _allCryptos;
+        private ObservableCollection<Cryptocurrency> _filteredCryptos;
+        private string _searchQuery;
 
         public ObservableCollection<Cryptocurrency> Cryptos
         {
@@ -25,15 +26,16 @@ namespace CryptoService
             {
                 _cryptos = value;
                 OnPropertyChanged();
+                FilterCryptos();
             }
         }
 
-        public ObservableCollection<Cryptocurrency> AllCryptos
+        public ObservableCollection<Cryptocurrency> FilteredCryptos
         {
-            get { return _allCryptos; }
+            get { return _filteredCryptos; }
             set
             {
-                _allCryptos = value;
+                _filteredCryptos = value;
                 OnPropertyChanged();
             }
         }
@@ -53,7 +55,34 @@ namespace CryptoService
         {
             _cryptoApiService = cryptoApiService;
             Cryptos = new ObservableCollection<Cryptocurrency>();
-            AllCryptos = new ObservableCollection<Cryptocurrency>();
+            FilteredCryptos = new ObservableCollection<Cryptocurrency>();
+        }
+
+        public string SearchQuery
+        {
+            get { return _searchQuery; }
+            set
+            {
+                _searchQuery = value;
+                OnPropertyChanged();
+                FilterCryptos();
+            }
+        }
+
+        private void FilterCryptos()
+        {
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                FilteredCryptos = new ObservableCollection<Cryptocurrency>(Cryptos);
+            }
+            else
+            {
+                var queryLower = SearchQuery.ToLower();
+                var filtered = Cryptos.Where(crypto =>
+                    crypto.Name.ToLower().Contains(queryLower) ||
+                    crypto.Symbol.ToLower().Contains(queryLower)).ToList();
+                FilteredCryptos = new ObservableCollection<Cryptocurrency>(filtered);
+            }
         }
 
         public async Task InitializeAsync(string baseAddress, string requestUri)
@@ -87,11 +116,12 @@ namespace CryptoService
             {
                 var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
                 var cryptos = ToCryptos(root);
-                AllCryptos.Clear();
+                Cryptos.Clear();
                 foreach (var crypto in cryptos)
                 {
-                    AllCryptos.Add(crypto);
+                    Cryptos.Add(crypto);
                 }
+                FilterCryptos();
                 ErrorMessage = string.Empty;
             }
             catch (Exception ex)
@@ -117,7 +147,8 @@ namespace CryptoService
                 Markets.Clear();
                 foreach (var market in markets)
                 {
-                    Markets.Add(market);
+                    if (market.BaseId == cryptoId)
+                        Markets.Add(market);
                 }
             }
             catch (Exception ex)

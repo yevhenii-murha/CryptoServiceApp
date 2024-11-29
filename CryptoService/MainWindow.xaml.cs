@@ -16,9 +16,6 @@ using System.Windows.Shapes;
 
 namespace CryptoService
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly CryptoViewModel _viewModel;

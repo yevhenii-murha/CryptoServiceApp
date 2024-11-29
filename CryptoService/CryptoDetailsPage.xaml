@@ -26,7 +26,7 @@
                 VerticalAlignment="Center">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <StackPanel>
-                    <!-- Заголовки як перший рядок -->
+                    <!-- Заголовки -->
                     <Grid Margin="5,10" Width="700">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
