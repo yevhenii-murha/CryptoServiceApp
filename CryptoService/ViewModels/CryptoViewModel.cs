@@ -14,10 +14,11 @@ namespace CryptoService.ViewModels
     public class CryptoViewModel : INotifyPropertyChanged
     {
         private readonly ICryptoApiService _cryptoApiService;
-
         private ObservableCollection<Cryptocurrency> _cryptos;
         private ObservableCollection<Cryptocurrency> _filteredCryptos;
         private string _searchQuery;
+        private string _errorMessage;
+        private ObservableCollection<Market> _markets = new ObservableCollection<Market>();
 
         public ObservableCollection<Cryptocurrency> Cryptos
         {
@@ -40,24 +41,6 @@ namespace CryptoService.ViewModels
             }
         }
 
-        private string _errorMessage;
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public CryptoViewModel(ICryptoApiService cryptoApiService)
-        {
-            _cryptoApiService = cryptoApiService;
-            Cryptos = new ObservableCollection<Cryptocurrency>();
-            FilteredCryptos = new ObservableCollection<Cryptocurrency>();
-        }
-
         public string SearchQuery
         {
             get { return _searchQuery; }
@@ -69,20 +52,31 @@ namespace CryptoService.ViewModels
             }
         }
 
-        private void FilterCryptos()
+        public string ErrorMessage
         {
-            if (string.IsNullOrWhiteSpace(SearchQuery))
+            get => _errorMessage;
+            set
             {
-                FilteredCryptos = new ObservableCollection<Cryptocurrency>(Cryptos);
+                _errorMessage = value;
+                OnPropertyChanged();
             }
-            else
+        }
+
+        public ObservableCollection<Market> Markets
+        {
+            get { return _markets; }
+            private set
             {
-                var queryLower = SearchQuery.ToLower();
-                var filtered = Cryptos.Where(crypto =>
-                    crypto.Name.ToLower().Contains(queryLower) ||
-                    crypto.Symbol.ToLower().Contains(queryLower)).ToList();
-                FilteredCryptos = new ObservableCollection<Cryptocurrency>(filtered);
+                _markets = value;
+                OnPropertyChanged();
             }
+        }
+
+        public CryptoViewModel(ICryptoApiService cryptoApiService)
+        {
+            _cryptoApiService = cryptoApiService;
+            Cryptos = new ObservableCollection<Cryptocurrency>();
+            FilteredCryptos = new ObservableCollection<Cryptocurrency>();
         }
 
         public async Task InitializeAsync(string baseAddress, string requestUri)
@@ -130,12 +124,26 @@ namespace CryptoService.ViewModels
             }
         }
 
+        private void FilterCryptos()
+        {
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                FilteredCryptos = new ObservableCollection<Cryptocurrency>(Cryptos);
+            }
+            else
+            {
+                var queryLower = SearchQuery.ToLower();
+                var filtered = Cryptos.Where(crypto =>
+                    crypto.Name.ToLower().Contains(queryLower) ||
+                    crypto.Symbol.ToLower().Contains(queryLower)).ToList();
+                FilteredCryptos = new ObservableCollection<Cryptocurrency>(filtered);
+            }
+        }
+
         private IEnumerable<Cryptocurrency> ToCryptos(Root root)
         {
             return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto) ?? Enumerable.Empty<Cryptocurrency>();
         }
-
-        public ObservableCollection<Market> Markets { get; private set; } = new ObservableCollection<Market>();
 
         public async Task LoadCryptoMarketsAsync(string baseAddress, string cryptoId)
         {
