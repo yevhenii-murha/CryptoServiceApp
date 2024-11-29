@@ -13,37 +13,51 @@
     </Page.Resources>
 
     <Grid>
+        <!-- Визначення рядків для кнопок та таблиці -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Для кнопок -->
+            <!-- Для кнопки навігації -->
+            <RowDefinition Height="Auto"/>
+            <!-- Для пошукового поля та тексту -->
             <RowDefinition Height="*"/>
             <!-- Для таблиці -->
         </Grid.RowDefinitions>
 
-        <!-- Кнопка "Назад" -->
-        <Button x:Name="BackButton" Content="Back"
-                Background="#F3BA2F" Foreground="#1B263B"
-                FontSize="12" FontWeight="Bold"
-                Width="100" Height="25"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Margin="10"
-                Click="BackButton_Click" />
-
-        <!-- Текстове поле для пошуку -->
+        <!-- Панель з кнопкою "Назад" -->
         <Grid Grid.Row="0" Margin="10">
+            <Button x:Name="BackButton" Content="Back"
+                    Background="#F3BA2F" Foreground="#1B263B"
+                    FontSize="12" FontWeight="Bold"
+                    Width="100" Height="25"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="10"
+                    Click="BackButton_Click" />
+        </Grid>
+
+        <!-- Панель для пошукового поля і тексту по центру -->
+        <Grid Grid.Row="1" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Текстове поле для пошуку -->
             <TextBox x:Name="SearchTextBox" Width="200" VerticalAlignment="Center"
                      Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                     Background="#1B263B" Foreground="White" FontSize="14" Margin="0,0,10,0"/>
-            
+                     Background="#1B263B" Foreground="White" FontSize="14" Margin="10,0,0,0"
+                     Grid.Column="1"/>
+
+            <!-- Текст, який описує поле для пошуку -->
             <TextBlock Text="Search by Name or Symbol" Foreground="Gray" 
-                       VerticalAlignment="Center" HorizontalAlignment="Left" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Margin="10,0,0,0" IsHitTestVisible="False"
-                       Visibility="{Binding Text, ElementName=SearchTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}"/>
+                       Visibility="{Binding Text, ElementName=SearchTextBox, Converter={StaticResource EmptyTextToVisibilityConverter}}"
+                       Grid.Column="1"/>
         </Grid>
 
         <!-- Основний контейнер для таблиці -->
-        <Border Grid.Row="1" Background="#1B263B"
+        <Border Grid.Row="2" Background="#1B263B"
                 CornerRadius="15"
                 Padding="20"
                 Margin="20"
