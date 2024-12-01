@@ -29,8 +29,7 @@ namespace CryptoService
 
         private void ShowAllButton_Click(object sender, RoutedEventArgs e)
         {
-            var showAllPage = new ShowAllCryptosPage(_viewModel);
-            NavigationService.Navigate(showAllPage);
+            NavigationService.Navigate(new ShowAllCryptosPage(_viewModel));
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)

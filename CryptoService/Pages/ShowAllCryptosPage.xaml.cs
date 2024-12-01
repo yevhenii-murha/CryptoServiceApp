@@ -31,7 +31,6 @@ namespace CryptoService
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            var cryptosPage = new CryptosPage(_viewModel);
             NavigationService.GoBack();
         }
 
@@ -47,8 +46,7 @@ namespace CryptoService
 
             if (selectedCrypto != null)
             {
-                var detailsPage = new CryptoDetailsPage(_viewModel, selectedCrypto.Id);
-                NavigationService.Navigate(detailsPage);
+                NavigationService.Navigate(new CryptoDetailsPage(_viewModel, selectedCrypto.Id));
             }
         }
 

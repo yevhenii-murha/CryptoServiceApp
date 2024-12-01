@@ -24,7 +24,14 @@ namespace CryptoService
         public MainWindow()
         {
             InitializeComponent();
-            _viewModel = new CryptoViewModel(new CoinCapApiService(new HttpClient()));
+            _viewModel = new CryptoViewModel(
+                new CryptoDataService(
+                    new CoinCapApiService(
+                        new HttpClient()
+                        )
+                    ),
+                new CryptoFilterService()
+                );
 
             Loaded += async (s, e) =>
             {

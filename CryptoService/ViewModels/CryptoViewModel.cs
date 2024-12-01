@@ -1,19 +1,19 @@
-﻿using CryptoService.DTOs;
+﻿using CryptoService.Models;
 using CryptoService.Services;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using CryptoService.Models;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace CryptoService.ViewModels
 {
     public class CryptoViewModel : INotifyPropertyChanged
     {
-        private readonly ICryptoApiService _cryptoApiService;
+        private readonly ICryptoDataService _cryptoDataService;
+        private readonly ICryptoFilterService _cryptoFilterService;
+
         private ObservableCollection<Cryptocurrency> _topCryptos;
         private ObservableCollection<Cryptocurrency> _allCryptos;
         private ObservableCollection<Cryptocurrency> _filteredCryptos;
@@ -84,13 +84,20 @@ namespace CryptoService.ViewModels
             }
         }
 
-        public CryptoViewModel(ICryptoApiService cryptoApiService)
+        public CryptoViewModel(ICryptoDataService cryptoDataService, ICryptoFilterService cryptoFilterService)
         {
-            _cryptoApiService = cryptoApiService;
+            _cryptoDataService = cryptoDataService;
+            _cryptoFilterService = cryptoFilterService;
+
             TopCryptos = new ObservableCollection<Cryptocurrency>();
             AllCryptos = new ObservableCollection<Cryptocurrency>();
             FilteredCryptos = new ObservableCollection<Cryptocurrency>();
             AllMarkets = new ObservableCollection<Market>();
+        }
+
+        private void FilterCryptos()
+        {
+            FilteredCryptos = _cryptoFilterService.FilterCryptos(AllCryptos, SearchQuery);
         }
 
         public async Task InitializeAsync(string baseAddress, string requestUri)
@@ -98,35 +105,11 @@ namespace CryptoService.ViewModels
             await LoadTopCryptos(baseAddress, requestUri);
         }
 
-        private void FilterCryptos()
-        {
-            if (AllCryptos == null)
-            {
-                FilteredCryptos = new ObservableCollection<Cryptocurrency>();
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(SearchQuery))
-            {
-                FilteredCryptos = new ObservableCollection<Cryptocurrency>(AllCryptos);
-            }
-            else
-            {
-                var queryLower = SearchQuery.ToLower();
-                var filtered = AllCryptos.Where(crypto =>
-                    crypto.Name.ToLower().Contains(queryLower) ||
-                    crypto.Symbol.ToLower().Contains(queryLower)).ToList();
-                FilteredCryptos = new ObservableCollection<Cryptocurrency>(filtered);
-            }
-        }
-
         public async Task LoadTopCryptos(string baseAddress, string requestUri)
         {
             try
             {
-                var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
-                var cryptos = ToCryptos(root);
-
+                var cryptos = await _cryptoDataService.GetTopCryptosAsync(baseAddress, requestUri);
                 TopCryptos.Clear();
                 var topCryptos = cryptos.OrderBy(crypto => crypto.Rank).Take(10);
                 foreach (var crypto in topCryptos)
@@ -145,9 +128,7 @@ namespace CryptoService.ViewModels
         {
             try
             {
-                var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
-                var cryptos = ToCryptos(root);
-
+                var cryptos = await _cryptoDataService.GetAllCryptosAsync(baseAddress, requestUri);
                 AllCryptos.Clear();
                 foreach (var crypto in cryptos)
                 {
@@ -166,9 +147,7 @@ namespace CryptoService.ViewModels
         {
             try
             {
-                var root = await _cryptoApiService.GetCryptoMarketsAsync(baseAddress, cryptoId);
-                var markets = ToMarkets(root);
-
+                var markets = await _cryptoDataService.GetCryptoMarketsAsync(baseAddress, cryptoId);
                 AllMarkets.Clear();
                 foreach (var market in markets)
                 {
@@ -180,16 +159,6 @@ namespace CryptoService.ViewModels
             {
                 ErrorMessage = $"Error loading market data: {ex.Message}";
             }
-        }
-
-        private static IEnumerable<Cryptocurrency> ToCryptos(CryptoRoot root)
-        {
-            return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto) ?? Enumerable.Empty<Cryptocurrency>();
-        }
-
-        private static IEnumerable<Market> ToMarkets(MarketRoot root)
-        {
-            return root?.data?.Select(marketDto => (Market)marketDto) ?? Enumerable.Empty<Market>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
