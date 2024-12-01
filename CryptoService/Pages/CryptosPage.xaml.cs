@@ -35,9 +35,7 @@ namespace CryptoService
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            string baseAddress = "https://api.coincap.io";
-            string requestUri = "/v2/assets";
-            await _viewModel.LoadTopCryptos(baseAddress, requestUri);
+            await _viewModel.LoadTopCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
         }
     }
 }

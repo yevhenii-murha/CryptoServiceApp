@@ -28,9 +28,7 @@ namespace CryptoService
 
             Loaded += async (s, e) =>
             {
-                string baseAddress = "https://api.coincap.io";
-                string requestUri = "/v2/assets";
-                await _viewModel.InitializeAsync(baseAddress, requestUri);
+                await _viewModel.InitializeAsync(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
 
                 MainFrame.Navigate(new CryptosPage(_viewModel));
             };
