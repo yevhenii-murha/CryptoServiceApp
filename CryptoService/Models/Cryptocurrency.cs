@@ -36,7 +36,7 @@ namespace CryptoService.Models
             Vwap24Hr = vwap24Hr;
         }
 
-        public static explicit operator Cryptocurrency(Datum cryptoDto)
+        public static explicit operator Cryptocurrency(CryptoDatum cryptoDto)
         {
             var id = cryptoDto.id ?? throw new ArgumentNullException(nameof(cryptoDto.id));
 

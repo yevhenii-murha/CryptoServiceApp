@@ -15,7 +15,7 @@ namespace CryptoService.Services
             _httpClient = httpClient;
         }
 
-        public async Task<Root> GetCryptosAsync(string baseAddress, string requestUri)
+        public async Task<CryptoRoot> GetCryptosAsync(string baseAddress, string requestUri)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace CryptoService.Services
                     throw new Exception("API response is empty.");
                 }
 
-                return JsonSerializer.Deserialize<Root>(response);
+                return JsonSerializer.Deserialize<CryptoRoot>(response);
             }
             catch (HttpRequestException httpEx)
             {

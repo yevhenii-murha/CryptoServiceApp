@@ -14,18 +14,30 @@ namespace CryptoService.ViewModels
     public class CryptoViewModel : INotifyPropertyChanged
     {
         private readonly ICryptoApiService _cryptoApiService;
-        private ObservableCollection<Cryptocurrency> _cryptos;
+        private ObservableCollection<Cryptocurrency> _topCryptos;
+        private ObservableCollection<Cryptocurrency> _allCryptos;
         private ObservableCollection<Cryptocurrency> _filteredCryptos;
+        private ObservableCollection<Market> _markets;
         private string _searchQuery;
         private string _errorMessage;
-        private ObservableCollection<Market> _markets = new ObservableCollection<Market>();
 
-        public ObservableCollection<Cryptocurrency> Cryptos
+        public ObservableCollection<Cryptocurrency> TopCryptos
         {
-            get { return _cryptos; }
+            get { return _topCryptos; }
             set
             {
-                _cryptos = value;
+                _topCryptos = value;
+                OnPropertyChanged();
+                FilterCryptos();
+            }
+        }
+
+        public ObservableCollection<Cryptocurrency> AllCryptos
+        {
+            get { return _allCryptos; }
+            set
+            {
+                _allCryptos = value;
                 OnPropertyChanged();
                 FilterCryptos();
             }
@@ -37,6 +49,16 @@ namespace CryptoService.ViewModels
             set
             {
                 _filteredCryptos = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Market> AllMarkets
+        {
+            get { return _markets; }
+            private set
+            {
+                _markets = value;
                 OnPropertyChanged();
             }
         }
@@ -62,26 +84,40 @@ namespace CryptoService.ViewModels
             }
         }
 
-        public ObservableCollection<Market> Markets
-        {
-            get { return _markets; }
-            private set
-            {
-                _markets = value;
-                OnPropertyChanged();
-            }
-        }
-
         public CryptoViewModel(ICryptoApiService cryptoApiService)
         {
             _cryptoApiService = cryptoApiService;
-            Cryptos = new ObservableCollection<Cryptocurrency>();
+            TopCryptos = new ObservableCollection<Cryptocurrency>();
+            AllCryptos = new ObservableCollection<Cryptocurrency>();
             FilteredCryptos = new ObservableCollection<Cryptocurrency>();
+            AllMarkets = new ObservableCollection<Market>();
         }
 
         public async Task InitializeAsync(string baseAddress, string requestUri)
         {
             await LoadTopCryptos(baseAddress, requestUri);
+        }
+
+        private void FilterCryptos()
+        {
+            if (AllCryptos == null)
+            {
+                FilteredCryptos = new ObservableCollection<Cryptocurrency>();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(SearchQuery))
+            {
+                FilteredCryptos = new ObservableCollection<Cryptocurrency>(AllCryptos);
+            }
+            else
+            {
+                var queryLower = SearchQuery.ToLower();
+                var filtered = AllCryptos.Where(crypto =>
+                    crypto.Name.ToLower().Contains(queryLower) ||
+                    crypto.Symbol.ToLower().Contains(queryLower)).ToList();
+                FilteredCryptos = new ObservableCollection<Cryptocurrency>(filtered);
+            }
         }
 
         public async Task LoadTopCryptos(string baseAddress, string requestUri)
@@ -90,11 +126,12 @@ namespace CryptoService.ViewModels
             {
                 var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
                 var cryptos = ToCryptos(root);
-                Cryptos.Clear();
-                var topRankedCryptos = cryptos.OrderBy(crypto => crypto.Rank).Take(10);
-                foreach (var crypto in topRankedCryptos)
+
+                TopCryptos.Clear();
+                var topCryptos = cryptos.OrderBy(crypto => crypto.Rank).Take(10);
+                foreach (var crypto in topCryptos)
                 {
-                    Cryptos.Add(crypto);
+                    TopCryptos.Add(crypto);
                 }
                 ErrorMessage = string.Empty;
             }
@@ -110,10 +147,11 @@ namespace CryptoService.ViewModels
             {
                 var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
                 var cryptos = ToCryptos(root);
-                Cryptos.Clear();
+
+                AllCryptos.Clear();
                 foreach (var crypto in cryptos)
                 {
-                    Cryptos.Add(crypto);
+                    AllCryptos.Add(crypto);
                 }
                 FilterCryptos();
                 ErrorMessage = string.Empty;
@@ -124,45 +162,34 @@ namespace CryptoService.ViewModels
             }
         }
 
-        private void FilterCryptos()
-        {
-            if (string.IsNullOrWhiteSpace(SearchQuery))
-            {
-                FilteredCryptos = new ObservableCollection<Cryptocurrency>(Cryptos);
-            }
-            else
-            {
-                var queryLower = SearchQuery.ToLower();
-                var filtered = Cryptos.Where(crypto =>
-                    crypto.Name.ToLower().Contains(queryLower) ||
-                    crypto.Symbol.ToLower().Contains(queryLower)).ToList();
-                FilteredCryptos = new ObservableCollection<Cryptocurrency>(filtered);
-            }
-        }
-
-        private IEnumerable<Cryptocurrency> ToCryptos(Root root)
-        {
-            return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto) ?? Enumerable.Empty<Cryptocurrency>();
-        }
-
         public async Task LoadCryptoMarketsAsync(string baseAddress, string cryptoId)
         {
             try
             {
-                var marketRoot = await _cryptoApiService.GetCryptoMarketsAsync(baseAddress, cryptoId);
-                var markets = marketRoot.data.Select(marketDto => (Market)marketDto);
+                var root = await _cryptoApiService.GetCryptoMarketsAsync(baseAddress, cryptoId);
+                var markets = ToMarkets(root);
 
-                Markets.Clear();
+                AllMarkets.Clear();
                 foreach (var market in markets)
                 {
                     if (market.BaseId == cryptoId)
-                        Markets.Add(market);
+                        AllMarkets.Add(market);
                 }
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Error loading market data: {ex.Message}";
             }
+        }
+
+        private static IEnumerable<Cryptocurrency> ToCryptos(CryptoRoot root)
+        {
+            return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto) ?? Enumerable.Empty<Cryptocurrency>();
+        }
+
+        private static IEnumerable<Market> ToMarkets(MarketRoot root)
+        {
+            return root?.data?.Select(marketDto => (Market)marketDto) ?? Enumerable.Empty<Market>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

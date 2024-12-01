@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace CryptoService.DTOs
 {
-    public record Datum(
+    public record CryptoDatum(
         [property: JsonPropertyName("id")] string id,
         [property: JsonPropertyName("rank")] string rank,
         [property: JsonPropertyName("symbol")] string symbol,

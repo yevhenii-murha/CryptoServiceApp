@@ -40,7 +40,7 @@
                 VerticalAlignment="Center">
             <Grid>
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <ItemsControl ItemsSource="{Binding Cryptos}">
+                    <ItemsControl ItemsSource="{Binding TopCryptos}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid Margin="0,5" Width="470">
