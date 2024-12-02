@@ -109,9 +109,8 @@ namespace CryptoService.ViewModels
         {
             try
             {
-                var cryptos = await _cryptoDataService.GetTopCryptosAsync(baseAddress, requestUri);
+                var topCryptos = await _cryptoDataService.GetTopCryptosAsync(baseAddress, requestUri);
                 TopCryptos.Clear();
-                var topCryptos = cryptos.OrderBy(crypto => crypto.Rank).Take(10);
                 foreach (var crypto in topCryptos)
                 {
                     TopCryptos.Add(crypto);

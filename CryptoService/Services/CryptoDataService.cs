@@ -17,7 +17,7 @@ namespace CryptoService.Services
         public async Task<IEnumerable<Cryptocurrency>> GetTopCryptosAsync(string baseAddress, string requestUri)
         {
             var root = await _cryptoApiService.GetCryptosAsync(baseAddress, requestUri);
-            return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto) ?? Enumerable.Empty<Cryptocurrency>();
+            return root?.data?.Select(cryptoDto => (Cryptocurrency)cryptoDto).OrderBy(crypto => crypto.Rank).Take(10) ?? Enumerable.Empty<Cryptocurrency>();
         }
 
         public async Task<IEnumerable<Cryptocurrency>> GetAllCryptosAsync(string baseAddress, string requestUri)
