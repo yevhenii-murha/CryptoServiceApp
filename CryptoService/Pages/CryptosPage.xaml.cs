@@ -36,5 +36,10 @@ namespace CryptoService
         {
             await _viewModel.LoadTopCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
         }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.LoadTopCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+        }
     }
 }

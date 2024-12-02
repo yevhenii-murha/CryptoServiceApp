@@ -5,33 +5,46 @@
       Loaded="Page_Loaded">
 
     <Page.Resources>
-        <!-- Ресурси для конвертерів -->
+        <!-- Converters for positive and negative change visibility -->
         <local:PositiveChangeVisibilityConverter x:Key="PositiveChangeVisibilityConverter"/>
         <local:NegativeChangeVisibilityConverter x:Key="NegativeChangeVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
-        <!-- Визначення рядків для кнопки і таблиці -->
+        <!-- Row definitions for buttons and table -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Для кнопки Show All -->
+            <!-- For All Cryptos and Refresh buttons -->
             <RowDefinition Height="*"/>
-            <!-- Для таблиці -->
+            <!-- For the table -->
         </Grid.RowDefinitions>
 
-        <!-- Панель з кнопкою "Show All" -->
+        <!-- Button panel -->
         <Grid Grid.Row="0" Margin="10">
-            <Button x:Name="ShowAllButton" Content="Show All"
-                    Background="#F3BA2F" Foreground="#1B263B"
-                    FontSize="12" FontWeight="Bold"
-                    Width="100" Height="25"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Margin="10"
-                    Click="ShowAllButton_Click" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <!-- All Cryptos button -->
+                <Button x:Name="ShowAllButton" Content="All Cryptos"
+                        Background="#F3BA2F" Foreground="#1B263B"
+                        FontSize="12" FontWeight="Bold"
+                        Width="100" Height="25"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="10"
+                        Click="ShowAllButton_Click" />
+
+                <!-- Refresh button -->
+                <Button x:Name="RefreshButton" Content="Refresh"
+                        Background="#F3BA2F" Foreground="#1B263B"
+                        FontSize="12" FontWeight="Bold"
+                        Width="100" Height="25"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="10"
+                        Click="RefreshButton_Click" />
+            </StackPanel>
         </Grid>
 
-        <!-- Основний контейнер для таблиці -->
+        <!-- Table container -->
         <Border Grid.Row="1" Background="#1B263B"
                 CornerRadius="15"
                 Padding="20"
@@ -51,7 +64,7 @@
                                         <ColumnDefinition Width="100"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Символ криптовалюти -->
+                                    <!-- Cryptocurrency symbol -->
                                     <TextBlock Grid.Column="0"
                                                Text="{Binding Symbol}"
                                                FontSize="14"
@@ -59,14 +72,14 @@
                                                Foreground="White"
                                                VerticalAlignment="Center" />
 
-                                    <!-- Назва криптовалюти -->
+                                    <!-- Cryptocurrency name -->
                                     <TextBlock Grid.Column="1"
                                                Text="{Binding Name}"
                                                FontSize="12"
                                                Foreground="#A0A0A0"
                                                VerticalAlignment="Center" />
 
-                                    <!-- Ціна -->
+                                    <!-- Price -->
                                     <TextBlock Grid.Column="2"
                                                Text="{Binding PriceUsd, StringFormat={}{0:C2}}"
                                                FontSize="14"
@@ -75,7 +88,7 @@
                                                VerticalAlignment="Center"
                                                HorizontalAlignment="Right"/>
 
-                                    <!-- Зміна ціни -->
+                                    <!-- Price change percentage -->
                                     <TextBlock Grid.Column="3"
                                                Text="{Binding ChangePercent24Hr, StringFormat={}{0:0.00}%}"
                                                FontSize="14"
@@ -86,10 +99,12 @@
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="Foreground" Value="White" />
                                                 <Style.Triggers>
+                                                    <!-- Positive change color (Green) -->
                                                     <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource PositiveChangeVisibilityConverter}}" Value="Visible">
                                                         <Setter Property="Foreground" Value="#2ECC71" />
                                                     </DataTrigger>
 
+                                                    <!-- Negative change color (Red) -->
                                                     <DataTrigger Binding="{Binding ChangePercent24Hr, Converter={StaticResource NegativeChangeVisibilityConverter}}" Value="Visible">
                                                         <Setter Property="Foreground" Value="#E74C3C" />
                                                     </DataTrigger>

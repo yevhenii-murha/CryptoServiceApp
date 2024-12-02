@@ -55,5 +55,10 @@ namespace CryptoService
             var searchQuery = SearchTextBox.Text;
             _viewModel.SearchQuery = searchQuery;
         }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.LoadAllCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+        }
     }
 }

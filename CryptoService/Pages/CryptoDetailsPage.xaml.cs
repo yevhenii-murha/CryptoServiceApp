@@ -38,5 +38,15 @@ namespace CryptoService
         {
             NavigationService.GoBack();
         }
+
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.LoadCryptoMarketsAsync(ApiConfig.BaseAddress, _cryptoId);
+        }
+
+        private void HomeButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new CryptosPage(_viewModel));
+        }
     }
 }

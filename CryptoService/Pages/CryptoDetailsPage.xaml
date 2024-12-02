@@ -6,7 +6,10 @@
       Loaded="Page_Loaded">
 
     <Page.Resources>
-        <!-- Стилі для GridViewColumnHeader -->
+        <!-- Converter for thousand separators -->
+        <local:ThousandSeparatorConverter x:Key="ThousandSeparatorConverter"/>
+
+        <!-- Style for GridViewColumnHeader -->
         <Style x:Key="GridViewColumnHeaderStyle" TargetType="GridViewColumnHeader">
             <Setter Property="Background" Value="#1B263B"/>
             <Setter Property="Foreground" Value="White"/>
@@ -14,25 +17,48 @@
             <Setter Property="Padding" Value="10"/>
         </Style>
 
-        <!-- Стиль для ListViewItem (елементів списку) без тригерів -->
+        <!-- Style for items in the list -->
         <Style x:Key="ListViewItemStyle" TargetType="ListViewItem">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Padding" Value="10"/>
         </Style>
-
-        <!-- Додавання конвертера в ресурси -->
-        <local:ThousandSeparatorConverter x:Key="ThousandSeparatorConverter"/>
     </Page.Resources>
 
     <Grid>
-        <!-- Головний контейнер, де буде кнопка назад і список -->
+        <!-- Main container for buttons -->
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Панель з кнопками -->
+        <!-- Button panel -->
         <Grid Grid.Row="0" Margin="10">
+            <Grid.ColumnDefinitions>
+                <!-- Home button -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Spacer between buttons -->
+                <ColumnDefinition Width="*"/>
+                <!-- Back button -->
+                <ColumnDefinition Width="Auto"/>
+                <!-- Refresh button -->
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Home button -->
+            <Button x:Name="HomeButton" Content="Home"
+                    Background="#F3BA2F" Foreground="#1B263B"
+                    FontSize="12" FontWeight="Bold"
+                    Width="100" Height="25"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="10"
+                    Grid.Column="0"
+                    Click="HomeButton_Click" />
+
+            <!-- Spacer column -->
+            <Grid Grid.Column="1"/>
+
+            <!-- Back button -->
             <Button x:Name="BackButton" Content="Back"
                     Background="#F3BA2F" Foreground="#1B263B"
                     FontSize="12" FontWeight="Bold"
@@ -40,10 +66,22 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Margin="10"
+                    Grid.Column="2"
                     Click="BackButton_Click" />
+
+            <!-- Refresh button -->
+            <Button x:Name="RefreshButton" Content="Refresh"
+                    Background="#F3BA2F" Foreground="#1B263B"
+                    FontSize="12" FontWeight="Bold"
+                    Width="100" Height="25"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="10"
+                    Grid.Column="3"
+                    Click="RefreshButton_Click" />
         </Grid>
 
-        <!-- Основний контейнер для таблиці -->
+        <!-- Table container -->
         <Border Grid.Row="1" Background="#1B263B"
                 CornerRadius="15"
                 Padding="20"
@@ -51,17 +89,17 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top">
             <Grid>
-                <!-- Прокручуваний список елементів -->
+                <!-- Scrollable list of items -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <ListView ItemsSource="{Binding AllMarkets}" ItemContainerStyle="{StaticResource ListViewItemStyle}">
                         <ListView.View>
                             <GridView>
-                                <!-- Форматування заголовка і стовпця з використанням стилю для заголовку -->
+                                <!-- Header column -->
                                 <GridViewColumn Header="Exchange (ID)" DisplayMemberBinding="{Binding ExchangeId}" Width="180" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}" />
                                 <GridViewColumn Header="Base (Symbol)" DisplayMemberBinding="{Binding BaseSymbol}" Width="180" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}" />
                                 <GridViewColumn Header="Quote (Symbol)" DisplayMemberBinding="{Binding QuoteSymbol}" Width="180" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}" />
 
-                                <!-- Використовуємо конвертер для форматування ціни з роздільниками тисяч -->
+                                <!-- Price with thousand separator -->
                                 <GridViewColumn Header="Price (USD)" Width="180" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -70,7 +108,7 @@
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
 
-                                <!-- Використовуємо конвертер для форматування обсягу з роздільниками тисяч -->
+                                <!-- Volume with thousand separator -->
                                 <GridViewColumn Header="Volume (24H)" Width="180" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
@@ -79,7 +117,7 @@
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
 
-                                <!-- Використовуємо конвертер для форматування процентного обсягу з роздільниками тисяч -->
+                                <!-- Volume percentage with thousand separator -->
                                 <GridViewColumn Header="Volume (%)" Width="180" HeaderContainerStyle="{StaticResource GridViewColumnHeaderStyle}">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
