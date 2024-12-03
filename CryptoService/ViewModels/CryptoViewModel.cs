@@ -13,22 +13,29 @@ namespace CryptoService.ViewModels
     {
         private readonly ICryptoDataService _cryptoDataService;
         private readonly ICryptoFilterService _cryptoFilterService;
+        private readonly ConsoleLogger _logger;
 
         private ObservableCollection<Cryptocurrency> _topCryptos;
         private ObservableCollection<Cryptocurrency> _allCryptos;
         private ObservableCollection<Cryptocurrency> _filteredCryptos;
         private ObservableCollection<Market> _markets;
         private string _searchQuery;
-        private string _errorMessage;
 
         public ObservableCollection<Cryptocurrency> TopCryptos
         {
             get { return _topCryptos; }
             set
             {
-                _topCryptos = value;
-                OnPropertyChanged();
-                FilterCryptos();
+                try
+                {
+                    _topCryptos = value;
+                    OnPropertyChanged();
+                    FilterCryptos();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error updating TopCryptos.", ex);
+                }
             }
         }
 
@@ -37,9 +44,16 @@ namespace CryptoService.ViewModels
             get { return _allCryptos; }
             set
             {
-                _allCryptos = value;
-                OnPropertyChanged();
-                FilterCryptos();
+                try
+                {
+                    _allCryptos = value;
+                    OnPropertyChanged();
+                    FilterCryptos();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error updating AllCryptos.", ex);
+                }
             }
         }
 
@@ -48,8 +62,15 @@ namespace CryptoService.ViewModels
             get { return _filteredCryptos; }
             set
             {
-                _filteredCryptos = value;
-                OnPropertyChanged();
+                try
+                {
+                    _filteredCryptos = value;
+                    OnPropertyChanged();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error updating FilteredCryptos.", ex);
+                }
             }
         }
 
@@ -58,8 +79,15 @@ namespace CryptoService.ViewModels
             get { return _markets; }
             private set
             {
-                _markets = value;
-                OnPropertyChanged();
+                try
+                {
+                    _markets = value;
+                    OnPropertyChanged();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error updating AllMarkets.", ex);
+                }
             }
         }
 
@@ -68,19 +96,16 @@ namespace CryptoService.ViewModels
             get { return _searchQuery; }
             set
             {
-                _searchQuery = value;
-                OnPropertyChanged();
-                FilterCryptos();
-            }
-        }
-
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set
-            {
-                _errorMessage = value;
-                OnPropertyChanged();
+                try
+                {
+                    _searchQuery = value;
+                    OnPropertyChanged();
+                    FilterCryptos();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error updating SearchQuery.", ex);
+                }
             }
         }
 
@@ -88,6 +113,7 @@ namespace CryptoService.ViewModels
         {
             _cryptoDataService = cryptoDataService;
             _cryptoFilterService = cryptoFilterService;
+            _logger = new ConsoleLogger();
 
             TopCryptos = new ObservableCollection<Cryptocurrency>();
             AllCryptos = new ObservableCollection<Cryptocurrency>();
@@ -97,29 +123,45 @@ namespace CryptoService.ViewModels
 
         private void FilterCryptos()
         {
-            FilteredCryptos = _cryptoFilterService.FilterCryptos(AllCryptos, SearchQuery);
+            try
+            {
+                FilteredCryptos = _cryptoFilterService.FilterCryptos(AllCryptos, SearchQuery);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error filtering cryptocurrencies.", ex);
+            }
         }
 
         public async Task InitializeAsync(string baseAddress, string requestUri)
         {
-            await LoadTopCryptos(baseAddress, requestUri);
+            try
+            {
+                _logger.Info("Initializing CryptoViewModel...");
+                await LoadTopCryptos(baseAddress, requestUri);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error during initialization.", ex);
+            }
         }
 
         public async Task LoadTopCryptos(string baseAddress, string requestUri)
         {
             try
             {
+                _logger.Info($"Loading top cryptos from {baseAddress}{requestUri}...");
                 var topCryptos = await _cryptoDataService.GetTopCryptosAsync(baseAddress, requestUri);
                 TopCryptos.Clear();
                 foreach (var crypto in topCryptos)
                 {
                     TopCryptos.Add(crypto);
                 }
-                ErrorMessage = string.Empty;
+                _logger.Info("Top cryptos loaded successfully.");
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error: {ex.Message}";
+                _logger.Error("Error loading top cryptos.", ex);
             }
         }
 
@@ -127,6 +169,7 @@ namespace CryptoService.ViewModels
         {
             try
             {
+                _logger.Info($"Loading all cryptos from {baseAddress}{requestUri}...");
                 var cryptos = await _cryptoDataService.GetAllCryptosAsync(baseAddress, requestUri);
                 AllCryptos.Clear();
                 foreach (var crypto in cryptos)
@@ -134,11 +177,11 @@ namespace CryptoService.ViewModels
                     AllCryptos.Add(crypto);
                 }
                 FilterCryptos();
-                ErrorMessage = string.Empty;
+                _logger.Info("All cryptos loaded successfully.");
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error: {ex.Message}";
+                _logger.Error("Error loading all cryptos.", ex);
             }
         }
 
@@ -146,6 +189,7 @@ namespace CryptoService.ViewModels
         {
             try
             {
+                _logger.Info($"Loading markets for crypto {cryptoId} from {baseAddress}...");
                 var markets = await _cryptoDataService.GetCryptoMarketsAsync(baseAddress, cryptoId);
                 AllMarkets.Clear();
                 foreach (var market in markets)
@@ -153,10 +197,11 @@ namespace CryptoService.ViewModels
                     if (market.BaseId == cryptoId)
                         AllMarkets.Add(market);
                 }
+                _logger.Info($"Markets for crypto {cryptoId} loaded successfully.");
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error loading market data: {ex.Message}";
+                _logger.Error("Error loading crypto markets.", ex);
             }
         }
 
@@ -164,7 +209,14 @@ namespace CryptoService.ViewModels
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            try
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error triggering PropertyChanged event.", ex);
+            }
         }
     }
 }

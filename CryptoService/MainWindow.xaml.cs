@@ -1,43 +1,47 @@
 ﻿using CryptoService.Services;
 using CryptoService.ViewModels;
 using System;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CryptoService
 {
     public partial class MainWindow : Window
     {
         private readonly CryptoViewModel _viewModel;
+        private readonly ConsoleLogger _logger;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            _logger = new ConsoleLogger();
+            _logger.Info("MainWindow initialized.");
+
             _viewModel = new CryptoViewModel(
                 new CryptoDataService(
                     new CoinCapApiService(
                         new HttpClient()
-                        )
-                    ),
+                    )
+                ),
                 new CryptoFilterService()
-                );
+            );
 
             Loaded += async (s, e) =>
             {
-                await _viewModel.InitializeAsync(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+                try
+                {
+                    _logger.Info("Initializing the view model...");
+                    await _viewModel.InitializeAsync(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+                    _logger.Info("View model initialized successfully.");
 
-                MainFrame.Navigate(new CryptosPage(_viewModel));
+                    MainFrame.Navigate(new CryptosPage(_viewModel));
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Error occurred during initialization.", ex);
+                }
             };
         }
     }

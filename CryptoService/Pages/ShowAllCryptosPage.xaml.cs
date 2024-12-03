@@ -2,63 +2,94 @@
 using CryptoService.Services;
 using CryptoService.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CryptoService
 {
     public partial class ShowAllCryptosPage : Page
     {
         private readonly CryptoViewModel _viewModel;
+        private readonly ConsoleLogger _logger;
 
         public ShowAllCryptosPage(CryptoViewModel viewModel)
         {
             InitializeComponent();
             _viewModel = viewModel;
+            _logger = new ConsoleLogger();
             DataContext = _viewModel;
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.GoBack();
+            try
+            {
+                NavigationService.GoBack();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error navigating back.", ex);
+            }
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await _viewModel.LoadAllCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+            try
+            {
+                _logger.Info("Loading all cryptos...");
+                await _viewModel.LoadAllCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+                _logger.Info("All cryptos loaded successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error loading all cryptos.", ex);
+            }
         }
 
         private void InfoButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var selectedCrypto = (Cryptocurrency)button.DataContext;
-
-            if (selectedCrypto != null)
+            try
             {
-                NavigationService.Navigate(new CryptoDetailsPage(_viewModel, selectedCrypto.Id));
+                var button = sender as Button;
+                var selectedCrypto = (Cryptocurrency)button.DataContext;
+
+                if (selectedCrypto != null)
+                {
+                    NavigationService.Navigate(new CryptoDetailsPage(_viewModel, selectedCrypto.Id));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error navigating to crypto details.", ex);
             }
         }
 
         private void SearchButton_Click(object sender, RoutedEventArgs e)
         {
-            var searchQuery = SearchTextBox.Text;
-            _viewModel.SearchQuery = searchQuery;
+            try
+            {
+                var searchQuery = SearchTextBox.Text;
+                _viewModel.SearchQuery = searchQuery;
+                _logger.Info($"Search initiated for: {searchQuery}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error performing search.", ex);
+            }
         }
 
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            await _viewModel.LoadAllCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+            try
+            {
+                _logger.Info("Refreshing all cryptos...");
+                await _viewModel.LoadAllCryptos(ApiConfig.BaseAddress, ApiConfig.AssetsEndpoint);
+                _logger.Info("All cryptos refreshed successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error refreshing all cryptos.", ex);
+            }
         }
     }
 }
